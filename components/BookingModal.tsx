@@ -17,7 +17,7 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
   const [phone, setPhone] = useState<string>('');
   const [healthGoal, setHealthGoal] = useState<string>('Select Your Goal');
   
-  const [isTestMode, setIsTestMode] = useState<boolean>(true);
+  const [isTestMode, setIsTestMode] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [bookingSuccess, setBookingSuccess] = useState<any>(null);
 
@@ -304,24 +304,6 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
                   <option value="Lifestyle Disorder">Lifestyle Disorder</option>
                 </select>
               </div>
-            </div>
-
-            {/* Test Mode / Razorpay Mode Switch Box */}
-            <div className="bg-[#F5F0E8] border border-[#E8DFD5] rounded-xl p-3.5 flex items-center justify-between text-xs">
-              <div className="flex items-center space-x-2.5">
-                <CreditCard className="w-4 h-4 text-[#8C6D34]" />
-                <span className="text-stone-800 font-medium">
-                  {isTestMode ? 'Test Mode (Razorpay Verification Pending)' : 'Live Razorpay API Mode'}
-                </span>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setIsTestMode(!isTestMode)}
-                className="text-[11px] underline text-[#8C6D34] hover:text-stone-900 transition-colors"
-              >
-                Switch to {isTestMode ? 'Live API' : 'Demo Test'}
-              </button>
             </div>
 
             {/* Submit Button matching site warm gold theme */}
