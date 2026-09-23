@@ -32,8 +32,9 @@ export async function POST(request: Request) {
       currency: 'INR',
       receipt: `receipt_${Date.now()}`,
       notes: {
-        option: option || 'Consultation',
+        option: option || '1-on-1 Personalised Consultation',
         patientName: patientName || 'Patient',
+        diet_assessment_form: 'https://docs.google.com/forms/d/1K03_NXHtmo-_8kl_iqrTuHU4BZMT9aU6qRyqt9P7Ewk/viewform',
       },
     });
 
