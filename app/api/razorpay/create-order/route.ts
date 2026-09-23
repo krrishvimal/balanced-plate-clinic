@@ -15,7 +15,7 @@ export async function POST(request: Request) {
         isMock: true,
         order: {
           id: 'order_mock_' + Math.random().toString(36).substring(7),
-          amount: (amount || 999) * 100,
+          amount: (amount || 1) * 100,
           currency: 'INR',
           notes: { option, patientName },
         },
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     });
 
     const order = await instance.orders.create({
-      amount: (amount || 999) * 100, // Amount in paise
+      amount: (amount || 1) * 100, // Amount in paise
       currency: 'INR',
       receipt: `receipt_${Date.now()}`,
       notes: {

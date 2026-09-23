@@ -55,7 +55,7 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: 999,
+          amount: 1,
           option: selectedOption,
           patientName: fullName,
         }),
