@@ -72,14 +72,14 @@ export default function Consultation({ onOpenBooking }: ConsultationProps) {
             {/* Left Column (7 cols): Details & Description */}
             <div className="lg:col-span-7 space-y-4 text-left">
               <div className="space-y-2">
-                <span className="text-xs font-bold text-[#8C6D34] tracking-wider uppercase">Direct Consultation</span>
+                <span className="text-xs font-bold text-[#8C6D34] tracking-wider uppercase">All-Inclusive Guidance</span>
                 <h3 className="font-sans text-2xl sm:text-3xl font-extrabold text-stone-900 group-hover:text-[#8C6D34] transition-colors leading-tight">
-                  1-on-1 Personalised Consultation
+                  1-on-1 Consultation + Full Diet Chart
                 </h3>
               </div>
 
               <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
-                A deep-dive initial consultation to understand your medical background, hormonal profile, daily schedule, and dietary preferences. Receive a tailored home-cooked diet chart with clear, actionable guidelines.
+                A comprehensive 30–45 min private audio consultation to evaluate your medical background, lifestyle, and dietary goals—<strong>including your personalized home-cooked diet chart with no extra charges or hidden fees</strong>.
               </p>
 
               {/* 4 Feature Cards Grid */}

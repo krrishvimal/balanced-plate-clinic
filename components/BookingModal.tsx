@@ -261,7 +261,7 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
                     One-on-One Audio Consultation
                   </h4>
                   <p className="text-stone-600 text-xs mt-0.5 leading-snug">
-                    30–45 min personalised audio consultation with dietitian
+                    30–45 min audio consultation + full home-cooked diet chart included (No hidden fees)
                   </p>
                 </div>
               </div>
