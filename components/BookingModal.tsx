@@ -35,9 +35,10 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
     try {
       if (isTestMode) {
         setTimeout(() => {
+          const generatedId = 'BPN-' + Math.floor(100000 + Math.random() * 900000);
           setLoading(false);
           setBookingSuccess({
-            bookingId: 'BPN-' + Math.floor(100000 + Math.random() * 900000),
+            bookingId: generatedId,
             option: selectedOption,
             patientName: fullName,
             phone: phone,
@@ -46,6 +47,19 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
             paymentId: 'pay_test_' + Math.random().toString(36).substring(7),
             status: 'Confirmed (Test Mode)',
           });
+
+          fetch('/api/send-confirmation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              bookingId: generatedId,
+              patientName: fullName,
+              email: email,
+              phone: phone,
+              option: selectedOption,
+              date: date,
+            }),
+          }).catch((e) => console.error('Failed sending confirmation email', e));
         }, 1200);
         return;
       }
@@ -99,8 +113,10 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
             setLoading(false);
 
             if (verifyData.success) {
+              const generatedId = 'BPN-' + Math.floor(100000 + Math.random() * 900000);
+              
               setBookingSuccess({
-                bookingId: 'BPN-' + Math.floor(100000 + Math.random() * 900000),
+                bookingId: generatedId,
                 option: selectedOption,
                 patientName: fullName,
                 phone: phone,
@@ -109,6 +125,20 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
                 paymentId: response.razorpay_payment_id,
                 status: 'Confirmed (Paid via Razorpay)',
               });
+
+              // Send confirmation email asynchronously with Google Form & WhatsApp links
+              fetch('/api/send-confirmation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  bookingId: generatedId,
+                  patientName: fullName,
+                  email: email,
+                  phone: phone,
+                  option: selectedOption,
+                  date: date,
+                }),
+              }).catch((e) => console.error('Failed sending confirmation email', e));
             } else {
               alert('Payment signature verification failed.');
             }
