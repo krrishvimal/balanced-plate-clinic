@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 
 export default function ContactFooter() {
+  const [policyModal, setPolicyModal] = React.useState<string | null>(null);
+
   const quickLinks = [
     { label: 'Home', href: '#home' },
     { label: 'About', href: '#about' },
@@ -174,21 +176,97 @@ export default function ContactFooter() {
 
         </div>
 
-        {/* Bottom Copyright Bar */}
+        {/* Bottom Copyright Bar with Mandatory Razorpay Compliance Links */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 space-y-3 sm:space-y-0">
           <p>© 2024 Balanced Plate Nutrition Clinic. All rights reserved.</p>
-          <div className="flex items-center space-x-4">
-            <a href="#privacy" className="hover:text-amber-400 transition-colors">
+          <div className="flex flex-wrap items-center gap-3 text-[11px]">
+            <button onClick={() => setPolicyModal('privacy')} className="hover:text-amber-400 transition-colors">
               Privacy Policy
-            </a>
-            <span>|</span>
-            <a href="#terms" className="hover:text-amber-400 transition-colors">
+            </button>
+            <span>•</span>
+            <button onClick={() => setPolicyModal('terms')} className="hover:text-amber-400 transition-colors">
               Terms & Conditions
-            </a>
+            </button>
+            <span>•</span>
+            <button onClick={() => setPolicyModal('refund')} className="hover:text-amber-400 transition-colors">
+              Refund & Cancellation
+            </button>
+            <span>•</span>
+            <button onClick={() => setPolicyModal('shipping')} className="hover:text-amber-400 transition-colors">
+              Service & Delivery Policy
+            </button>
           </div>
         </div>
 
       </div>
+
+      {/* Policy Modals for Razorpay Compliance */}
+      {policyModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#FAF8F5] text-stone-900 max-w-2xl w-full rounded-2xl p-6 sm:p-8 max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-stone-200 pb-3">
+              <h3 className="font-bold text-lg text-[#8C6D34] uppercase tracking-wider">
+                {policyModal === 'privacy' && 'Privacy Policy'}
+                {policyModal === 'terms' && 'Terms & Conditions'}
+                {policyModal === 'refund' && 'Cancellation & Refund Policy'}
+                {policyModal === 'shipping' && 'Service & Delivery Policy'}
+              </h3>
+              <button
+                onClick={() => setPolicyModal(null)}
+                className="text-stone-500 hover:text-stone-900 font-bold text-xl px-2"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="text-xs sm:text-sm text-stone-700 leading-relaxed space-y-3">
+              {policyModal === 'privacy' && (
+                <>
+                  <p><strong>Privacy Policy:</strong> Balanced Plate Nutrition Clinic ("we", "our") respects your privacy and is committed to protecting your personal health data.</p>
+                  <p>1. <strong>Information Collection:</strong> We collect your name, phone number, email address, and dietary/health details solely to provide 1-on-1 nutrition guidance.</p>
+                  <p>2. <strong>Data Protection:</strong> Your personal data and medical history are never sold, rented, or shared with any third party.</p>
+                  <p>3. <strong>Payment Security:</strong> Online payments are processed through Razorpay's SSL encrypted payment gateway. We do not store credit card or banking details on our servers.</p>
+                </>
+              )}
+
+              {policyModal === 'terms' && (
+                <>
+                  <p><strong>Terms & Conditions:</strong> By booking a consultation with Nutritionist Simran Gulshan, you agree to the following terms:</p>
+                  <p>1. <strong>Clinical Services:</strong> Our nutrition plans provide evidence-based dietary recommendations for health and wellness. They are not a substitute for emergency medical treatment.</p>
+                  <p>2. <strong>1-on-1 Consultations:</strong> All consultations are conducted virtually via audio call and WhatsApp messaging.</p>
+                  <p>3. <strong>Adherence:</strong> Results depend on consistent meal plan implementation and lifestyle compliance.</p>
+                </>
+              )}
+
+              {policyModal === 'refund' && (
+                <>
+                  <p><strong>Cancellation & Refund Policy:</strong></p>
+                  <p>1. <strong>Appointment Rescheduling:</strong> You may reschedule your consultation up to 4 hours before the scheduled call time by contacting +91 87968 89242.</p>
+                  <p>2. <strong>Refunds:</strong> If a consultation is canceled before the initial session begins, a full refund will be processed within 5-7 business days back to the original payment method.</p>
+                  <p>3. <strong>Custom Diet Charts:</strong> Once a custom diet chart has been crafted and delivered, consultation fees are non-refundable.</p>
+                </>
+              )}
+
+              {policyModal === 'shipping' && (
+                <>
+                  <p><strong>Service & Delivery Policy:</strong></p>
+                  <p>1. <strong>Digital Delivery:</strong> Balanced Plate Nutrition Clinic provides 100% digital health services. No physical products or items are shipped.</p>
+                  <p>2. <strong>Service Timeline:</strong> Consultation calls are conducted at the agreed appointment date. Personalised diet charts are delivered digitally via WhatsApp/Email within 24-48 hours of consultation completion.</p>
+                </>
+              )}
+            </div>
+
+            <div className="pt-4 border-t border-stone-200 text-right">
+              <button
+                onClick={() => setPolicyModal(null)}
+                className="bg-[#8C6D34] hover:bg-[#745928] text-white text-xs font-bold px-6 py-2.5 rounded-xl"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </footer>
   );
 }
