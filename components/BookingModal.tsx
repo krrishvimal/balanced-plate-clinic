@@ -16,6 +16,7 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
   const [email, setEmail] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [healthGoal, setHealthGoal] = useState<string>('Select Your Goal');
+  const [existingBookingId, setExistingBookingId] = useState<string>('');
   
   const [isTestMode, setIsTestMode] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -23,7 +24,8 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
 
   if (!isOpen) return null;
 
-  const currentPrice = selectedOption.includes('Upgrade') || selectedOption.includes('1,500') || selectedOption.includes('1500') 
+  const isUpgrade = selectedOption.includes('Upgrade') || selectedOption.includes('1,500') || selectedOption.includes('1500');
+  const currentPrice = isUpgrade 
     ? 1500 
     : (selectedOption.includes('2,499') || selectedOption.includes('2499') || selectedOption.includes('Diet Chart Plan')) 
       ? 2499 
@@ -36,6 +38,11 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
       return;
     }
 
+    if (isUpgrade && (!existingBookingId || !existingBookingId.trim().toUpperCase().startsWith('BPN-'))) {
+      alert('Security Check: Please enter your valid Consultation Booking Reference ID (e.g. BPN-162037) received on your ₹999 payment receipt to verify your upgrade.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -45,7 +52,7 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
           setLoading(false);
           setBookingSuccess({
             bookingId: generatedId,
-            option: selectedOption,
+            option: `${selectedOption} (Ref: ${existingBookingId || 'N/A'})`,
             patientName: fullName,
             phone: phone,
             email: email || 'N/A',
@@ -62,7 +69,7 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
               patientName: fullName,
               email: email,
               phone: phone,
-              option: selectedOption,
+              option: `${selectedOption} (Ref: ${existingBookingId || 'N/A'})`,
               date: date,
             }),
           }).catch((e) => console.error('Failed sending confirmation email', e));
@@ -349,7 +356,7 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
               <div 
                 onClick={() => setSelectedOption('Upgrade Existing Consultation to Diet Chart Plan')}
                 className={`p-4 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all shadow-sm ${
-                  selectedOption.includes('Upgrade') || selectedOption.includes('1,500') || selectedOption.includes('1500')
+                  isUpgrade
                     ? 'bg-white border-[#C8A870] ring-2 ring-[#C8A870]/20'
                     : 'bg-[#F9F7F4] border-[#EBE3D8] opacity-80 hover:opacity-100'
                 }`}
@@ -372,6 +379,27 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
                   <span className="font-bold text-stone-900 text-base">₹1,500</span>
                 </div>
               </div>
+
+              {/* Verification field when Option 3 is selected */}
+              {isUpgrade && (
+                <div className="bg-[#FAF6EF] border border-[#E8DFD5] rounded-xl p-3.5 space-y-2">
+                  <label className="block text-xs font-bold text-[#8C6D34] flex items-center justify-between">
+                    <span>Enter Consultation Booking Ref ID *</span>
+                    <span className="text-[10px] text-stone-500 font-normal">(From your ₹999 receipt)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. BPN-162037"
+                    required
+                    value={existingBookingId}
+                    onChange={(e) => setExistingBookingId(e.target.value.toUpperCase())}
+                    className="w-full bg-white border border-[#EBE3D8] rounded-xl px-3.5 py-2.5 text-xs text-stone-800 font-mono focus:border-[#C8A870] outline-none shadow-xs"
+                  />
+                  <p className="text-[10px] text-stone-600 leading-snug">
+                    🔒 <strong>Security Verification</strong>: This Reference ID confirms your prior ₹999 consultation payment so your ₹1,500 upgrade balance is credited securely.
+                  </p>
+                </div>
+              )}
 
               {/* Adjustment Notice Callout */}
               <div className="bg-[#F5F0E8] border border-[#E8DFD5] rounded-xl p-3 text-[11px] text-stone-700 leading-relaxed flex items-start space-x-2">
