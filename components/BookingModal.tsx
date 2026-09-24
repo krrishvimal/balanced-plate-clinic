@@ -10,7 +10,7 @@ interface BookingModalProps {
 }
 
 export default function BookingModal({ isOpen, onClose, initialService }: BookingModalProps) {
-  const [selectedOption, setSelectedOption] = useState<string>('One-on-One Audio Consultation');
+  const [selectedOption, setSelectedOption] = useState<string>('One-on-One Audio Consultation Call');
   const [date, setDate] = useState<string>('');
   const [fullName, setFullName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -23,7 +23,11 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
 
   if (!isOpen) return null;
 
-  const currentPrice = selectedOption.includes('2,499') || selectedOption.includes('2499') || selectedOption.includes('Diet Chart') ? 2499 : 999;
+  const currentPrice = selectedOption.includes('Upgrade') || selectedOption.includes('1,500') || selectedOption.includes('1500') 
+    ? 1500 
+    : (selectedOption.includes('2,499') || selectedOption.includes('2499') || selectedOption.includes('Diet Chart Plan')) 
+      ? 2499 
+      : 999;
 
   const handleRazorpayPayment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -317,7 +321,7 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
               <div 
                 onClick={() => setSelectedOption('Personalised Diet Chart Plan')}
                 className={`p-4 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all shadow-sm ${
-                  selectedOption.includes('2,499') || selectedOption.includes('Diet Chart')
+                  selectedOption.includes('2,499') || (selectedOption.includes('Diet Chart') && !selectedOption.includes('Upgrade'))
                     ? 'bg-white border-[#C8A870] ring-2 ring-[#C8A870]/20'
                     : 'bg-[#F9F7F4] border-[#EBE3D8] opacity-80 hover:opacity-100'
                 }`}
@@ -338,6 +342,34 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
                 </div>
                 <div className="text-right flex-shrink-0 ml-2">
                   <span className="font-bold text-stone-900 text-base">₹2,499</span>
+                </div>
+              </div>
+
+              {/* Option 3: ₹1,500 Upgrade Option */}
+              <div 
+                onClick={() => setSelectedOption('Upgrade Existing Consultation to Diet Chart Plan')}
+                className={`p-4 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all shadow-sm ${
+                  selectedOption.includes('Upgrade') || selectedOption.includes('1,500') || selectedOption.includes('1500')
+                    ? 'bg-white border-[#C8A870] ring-2 ring-[#C8A870]/20'
+                    : 'bg-[#F9F7F4] border-[#EBE3D8] opacity-80 hover:opacity-100'
+                }`}
+              >
+                <div className="flex items-center space-x-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-[#F5F0E8] border border-[#DDD3C4] flex items-center justify-center text-[#8C6D34] flex-shrink-0">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-sans font-bold text-stone-900 text-sm flex items-center gap-1.5">
+                      Upgrade to Diet Chart Plan
+                      <span className="bg-emerald-500/10 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">₹999 Credit Applied</span>
+                    </h4>
+                    <p className="text-stone-600 text-xs mt-0.5">
+                      Already paid ₹999 for consultation? Pay ₹1,500 balance to add your diet chart
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right flex-shrink-0 ml-2">
+                  <span className="font-bold text-stone-900 text-base">₹1,500</span>
                 </div>
               </div>
 
