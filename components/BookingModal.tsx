@@ -220,7 +220,7 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
                 📋 Step 2: Complete Your Diet Assessment
               </p>
               <p className="text-xs text-stone-700 leading-relaxed">
-                Please fill out your health history & diet preferences so Nutritionist Simran Gulshan can prepare your plan before your call.
+                Please fill out your health history & diet preferences so Nutritionist Simran Gulshan can review your details during your consultation call.
               </p>
               <a
                 href="https://docs.google.com/forms/d/1K03_NXHtmo-_8kl_iqrTuHU4BZMT9aU6qRyqt9P7Ewk/viewform"

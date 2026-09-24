@@ -65,7 +65,7 @@ export async function POST(request: Request) {
           <!-- Step 2 Google Form Callout -->
           <div style="background-color: #F5F0E8; border: 1px border-[#E8DFD5]; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 24px;">
             <h3 style="color: #8C6D34; font-size: 14px; margin: 0 0 8px 0;">📋 Step 2: Complete Your Diet Assessment Form</h3>
-            <p style="font-size: 12px; color: #555; margin: 0 0 14px 0;">Please fill out your health history and diet preferences before your call so Simran can prepare your tailored plan.</p>
+            <p style="font-size: 12px; color: #555; margin: 0 0 14px 0;">Please fill out your health history and diet preferences so Nutritionist Simran Gulshan can review your details during your consultation call.</p>
             <a href="${googleFormLink}" target="_blank" style="background-color: #8C6D34; color: #FFFFFF; text-decoration: none; font-size: 13px; font-weight: bold; padding: 12px 24px; border-radius: 8px; display: inline-block;">
               Fill Diet Assessment Form ➔
             </a>
