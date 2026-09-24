@@ -9,15 +9,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, message: 'No customer email provided' });
     }
 
-    // Configure SMTP Transporter (Using GoDaddy Webmail or custom SMTP env vars)
+    const smtpUser = process.env.SMTP_USER || 'support@balancedplate.co.in';
+    const smtpPass = process.env.SMTP_PASSWORD;
+
+    const host = process.env.SMTP_HOST || 'smtpout.secureserver.net';
+    const port = Number(process.env.SMTP_PORT) || 587;
+    const isSecure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : port === 465;
+
+    // Configure SMTP Transporter (Using GoDaddy Outbound SMTP with STARTTLS on port 587)
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.secureserver.net',
-      port: Number(process.env.SMTP_PORT) || 465,
-      secure: true,
+      host: host,
+      port: port,
+      secure: isSecure,
       auth: {
-        user: process.env.SMTP_USER || 'support@balancedplate.co.in',
-        pass: process.env.SMTP_PASSWORD || '',
+        user: smtpUser,
+        pass: smtpPass || '',
       },
+      tls: {
+        rejectUnauthorized: false,
+      },
+      connectionTimeout: 12000,
     });
 
     const googleFormLink = 'https://docs.google.com/forms/d/1K03_NXHtmo-_8kl_iqrTuHU4BZMT9aU6qRyqt9P7Ewk/viewform';
@@ -86,9 +97,6 @@ export async function POST(request: Request) {
 
       </div>
     `;
-
-    const smtpUser = process.env.SMTP_USER || 'support@balancedplate.co.in';
-    const smtpPass = process.env.SMTP_PASSWORD;
 
     if (!smtpPass) {
       console.warn('SMTP_PASSWORD environment variable is not set in Vercel. Skipping email dispatch.');
