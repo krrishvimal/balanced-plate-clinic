@@ -23,6 +23,8 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
 
   if (!isOpen) return null;
 
+  const currentPrice = selectedOption.includes('2,499') || selectedOption.includes('2499') || selectedOption.includes('Diet Chart') ? 2499 : 999;
+
   const handleRazorpayPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !phone || !date) {
@@ -64,12 +66,12 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
         return;
       }
 
-      // Real Razorpay Checkout Order Flow (₹999 Production Price)
+      // Real Razorpay Checkout Order Flow (Dynamic Price based on selected plan)
       const res = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: 999,
+          amount: currentPrice,
           option: selectedOption,
           patientName: fullName,
         }),
@@ -278,24 +280,73 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
           /* Form Input Screen matching site color theme */
           <form onSubmit={handleRazorpayPayment} className="p-6 space-y-5 max-h-[82vh] overflow-y-auto">
             
-            {/* Step 1: SELECT CONSULTATION */}
-            <div>
-              <label className="block text-[11px] font-bold tracking-widest text-[#988467] uppercase mb-3">
-                1. SELECT CONSULTATION
+            {/* Step 1: SELECT SERVICE / PLAN */}
+            <div className="space-y-3">
+              <label className="block text-[11px] font-bold tracking-widest text-[#988467] uppercase mb-1">
+                1. SELECT SERVICE / PLAN
               </label>
 
-              <div className="bg-white border-2 border-[#C8A870] rounded-2xl p-4 flex items-center space-x-4 cursor-pointer shadow-sm">
-                <div className="w-12 h-12 rounded-xl bg-[#F5F0E8] border border-[#DDD3C4] flex items-center justify-center text-[#8C6D34] flex-shrink-0">
-                  <Phone className="w-5 h-5" />
+              {/* Option 1: ₹999 Consultation */}
+              <div 
+                onClick={() => setSelectedOption('One-on-One Audio Consultation Call')}
+                className={`p-4 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all shadow-sm ${
+                  !selectedOption.includes('2,499') && !selectedOption.includes('Diet Chart')
+                    ? 'bg-white border-[#C8A870] ring-2 ring-[#C8A870]/20'
+                    : 'bg-[#F9F7F4] border-[#EBE3D8] opacity-80 hover:opacity-100'
+                }`}
+              >
+                <div className="flex items-center space-x-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-[#F5F0E8] border border-[#DDD3C4] flex items-center justify-center text-[#8C6D34] flex-shrink-0">
+                    <Phone className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-sans font-bold text-stone-900 text-sm">
+                      1-on-One Audio Consultation Call
+                    </h4>
+                    <p className="text-stone-600 text-xs mt-0.5">
+                      30–45 min audio call to evaluate health history & goals
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-sans font-bold text-stone-900 text-sm sm:text-base">
-                    One-on-One Audio Consultation
-                  </h4>
-                  <p className="text-stone-600 text-xs mt-0.5 leading-snug">
-                    30–45 min audio consultation + full home-cooked diet chart included (No hidden fees)
-                  </p>
+                <div className="text-right flex-shrink-0 ml-2">
+                  <span className="font-bold text-stone-900 text-base">₹999</span>
                 </div>
+              </div>
+
+              {/* Option 2: ₹2,499 Personalised Diet Chart Plan */}
+              <div 
+                onClick={() => setSelectedOption('Personalised Diet Chart Plan')}
+                className={`p-4 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all shadow-sm ${
+                  selectedOption.includes('2,499') || selectedOption.includes('Diet Chart')
+                    ? 'bg-white border-[#C8A870] ring-2 ring-[#C8A870]/20'
+                    : 'bg-[#F9F7F4] border-[#EBE3D8] opacity-80 hover:opacity-100'
+                }`}
+              >
+                <div className="flex items-center space-x-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-[#F5F0E8] border border-[#DDD3C4] flex items-center justify-center text-[#8C6D34] flex-shrink-0">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-sans font-bold text-stone-900 text-sm flex items-center gap-1.5">
+                      Personalised Diet Chart Plan
+                      <span className="bg-[#C8A870]/20 text-[#8C6D34] text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Popular</span>
+                    </h4>
+                    <p className="text-stone-600 text-xs mt-0.5">
+                      Audio Consultation + Custom Home-Cooked Diet Chart
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right flex-shrink-0 ml-2">
+                  <span className="font-bold text-stone-900 text-base">₹2,499</span>
+                </div>
+              </div>
+
+              {/* Adjustment Notice Callout */}
+              <div className="bg-[#F5F0E8] border border-[#E8DFD5] rounded-xl p-3 text-[11px] text-stone-700 leading-relaxed flex items-start space-x-2">
+                <span className="text-[#8C6D34] font-bold text-sm">💡</span>
+                <span>
+                  <strong>Consultation Fee Credit Guarantee:</strong> If you book the <strong>₹999 Consultation Call</strong> first and decide to get the Personalised Diet Chart Plan after talking to Nutritionist Simran, your ₹999 consultation fee will be <strong>100% adjusted</strong> (you pay only the ₹1,500 difference)!
+                </span>
               </div>
             </div>
 
@@ -379,7 +430,7 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
               ) : (
                 <>
                   <ShieldCheck className="w-5 h-5 text-white" />
-                  <span>Proceed to Confirm & Pay</span>
+                  <span>Proceed to Confirm & Pay (₹{currentPrice.toLocaleString('en-IN')})</span>
                 </>
               )}
             </button>
