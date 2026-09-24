@@ -88,7 +88,7 @@ export async function POST(request: Request) {
       </div>
     `;
 
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Balanced Plate Clinic <onboarding@resend.dev>';
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Balanced Plate Clinic <support@balancedplate.co.in>';
 
     const { data, error } = await resend.emails.send({
       from: fromEmail,
