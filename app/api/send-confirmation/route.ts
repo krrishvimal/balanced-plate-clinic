@@ -87,20 +87,30 @@ export async function POST(request: Request) {
       </div>
     `;
 
-    // Only attempt sending email if SMTP credentials or user environment configured
-    if (process.env.SMTP_PASSWORD || process.env.SMTP_USER) {
-      await transporter.sendMail({
-        from: `"Balanced Plate Clinic" <${process.env.SMTP_USER || 'support@balancedplate.co.in'}>`,
-        to: email,
-        bcc: 'support@balancedplate.co.in', // Send copy to clinic
-        subject: `Appointment Confirmed (${bookingId}) - Balanced Plate Clinic`,
-        html: htmlContent,
+    const smtpUser = process.env.SMTP_USER || 'support@balancedplate.co.in';
+    const smtpPass = process.env.SMTP_PASSWORD;
+
+    if (!smtpPass) {
+      console.warn('SMTP_PASSWORD environment variable is not set in Vercel. Skipping email dispatch.');
+      return NextResponse.json({
+        success: false,
+        message: 'SMTP_PASSWORD environment variable is missing in Vercel. Please add SMTP_PASSWORD in Vercel Settings -> Environment Variables and redeploy.',
       });
     }
 
-    return NextResponse.json({ success: true, message: 'Confirmation email generated' });
+    const info = await transporter.sendMail({
+      from: `"Balanced Plate Clinic" <${smtpUser}>`,
+      to: email,
+      bcc: 'support@balancedplate.co.in', // Send copy to clinic
+      subject: `Appointment Confirmed (${bookingId}) - Balanced Plate Clinic`,
+      html: htmlContent,
+    });
+
+    console.log('Confirmation email sent successfully:', info.messageId);
+
+    return NextResponse.json({ success: true, message: 'Confirmation email sent successfully', messageId: info.messageId });
   } catch (error: any) {
     console.error('Send confirmation email error:', error);
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Error sending confirmation email' }, { status: 500 });
   }
 }
