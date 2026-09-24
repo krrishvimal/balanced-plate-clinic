@@ -64,12 +64,12 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
         return;
       }
 
-      // Real Razorpay Checkout Order Flow (Set to ₹1 for Live Testing)
+      // Real Razorpay Checkout Order Flow (₹999 Production Price)
       const res = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: 1,
+          amount: 999,
           option: selectedOption,
           patientName: fullName,
         }),
