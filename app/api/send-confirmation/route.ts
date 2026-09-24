@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 export async function POST(request: Request) {
   try {
@@ -9,27 +9,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, message: 'No customer email provided' });
     }
 
-    const smtpUser = process.env.SMTP_USER || 'support@balancedplate.co.in';
-    const smtpPass = process.env.SMTP_PASSWORD;
+    const resendApiKey = process.env.RESEND_API_KEY;
 
-    const host = process.env.SMTP_HOST || 'smtpout.secureserver.net';
-    const port = Number(process.env.SMTP_PORT) || 587;
-    const isSecure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : port === 465;
+    if (!resendApiKey) {
+      console.warn('RESEND_API_KEY environment variable is not set in Vercel.');
+      return NextResponse.json({
+        success: false,
+        message: 'RESEND_API_KEY missing in Vercel. Please add RESEND_API_KEY in Vercel Settings -> Environment Variables and redeploy.',
+      });
+    }
 
-    // Configure SMTP Transporter (Using GoDaddy Outbound SMTP with STARTTLS on port 587)
-    const transporter = nodemailer.createTransport({
-      host: host,
-      port: port,
-      secure: isSecure,
-      auth: {
-        user: smtpUser,
-        pass: smtpPass || '',
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-      connectionTimeout: 12000,
-    });
+    const resend = new Resend(resendApiKey);
 
     const googleFormLink = 'https://docs.google.com/forms/d/1K03_NXHtmo-_8kl_iqrTuHU4BZMT9aU6qRyqt9P7Ewk/viewform';
     const whatsappLink = 'https://wa.me/918796889242';
@@ -98,25 +88,23 @@ export async function POST(request: Request) {
       </div>
     `;
 
-    if (!smtpPass) {
-      console.warn('SMTP_PASSWORD environment variable is not set in Vercel. Skipping email dispatch.');
-      return NextResponse.json({
-        success: false,
-        message: 'SMTP_PASSWORD environment variable is missing in Vercel. Please add SMTP_PASSWORD in Vercel Settings -> Environment Variables and redeploy.',
-      });
-    }
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Balanced Plate Clinic <onboarding@resend.dev>';
 
-    const info = await transporter.sendMail({
-      from: `"Balanced Plate Clinic" <${smtpUser}>`,
-      to: email,
-      bcc: 'support@balancedplate.co.in', // Send copy to clinic
+    const { data, error } = await resend.emails.send({
+      from: fromEmail,
+      to: [email],
       subject: `Appointment Confirmed (${bookingId}) - Balanced Plate Clinic`,
       html: htmlContent,
     });
 
-    console.log('Confirmation email sent successfully:', info.messageId);
+    if (error) {
+      console.error('Resend dispatch error:', error);
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
 
-    return NextResponse.json({ success: true, message: 'Confirmation email sent successfully', messageId: info.messageId });
+    console.log('Confirmation email sent successfully via Resend:', data?.id);
+
+    return NextResponse.json({ success: true, message: 'Confirmation email sent successfully', id: data?.id });
   } catch (error: any) {
     console.error('Send confirmation email error:', error);
     return NextResponse.json({ success: false, message: error.message || 'Error sending confirmation email' }, { status: 500 });
