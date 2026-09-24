@@ -222,14 +222,24 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
               <p className="text-xs text-stone-700 leading-relaxed">
                 Please fill out your health history & diet preferences so Nutritionist Simran Gulshan can review your details during your consultation call.
               </p>
-              <a
-                href="https://docs.google.com/forms/d/1K03_NXHtmo-_8kl_iqrTuHU4BZMT9aU6qRyqt9P7Ewk/viewform"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center space-x-2 bg-[#8C6D34] hover:bg-[#745928] text-white text-xs font-bold px-6 py-3 rounded-xl shadow-md transition-all mt-1"
-              >
-                <span>Fill Diet Assessment Form ➔</span>
-              </a>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
+                <a
+                  href="https://docs.google.com/forms/d/1K03_NXHtmo-_8kl_iqrTuHU4BZMT9aU6qRyqt9P7Ewk/viewform"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-[#8C6D34] hover:bg-[#745928] text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-md transition-all"
+                >
+                  <span>Fill Diet Assessment Form ➔</span>
+                </a>
+                <a
+                  href={`https://wa.me/918796889242?text=${encodeURIComponent(`Hi Simran, I have booked a consultation! My Booking Ref ID is ${bookingSuccess.bookingId}.`)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-[#5C7A57] hover:bg-[#4A6346] text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-md transition-all"
+                >
+                  <span>💬 Chat on WhatsApp</span>
+                </a>
+              </div>
             </div>
 
             <button
