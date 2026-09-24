@@ -69,7 +69,7 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: 1,
+          amount: 999,
           option: selectedOption,
           patientName: fullName,
         }),
@@ -80,16 +80,14 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
         throw new Error(orderData.message || 'Failed to create Razorpay order');
       }
 
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.onload = () => {
+      const launchRazorpay = (data: any) => {
         const options = {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_placeholder',
-          amount: orderData.order.amount,
-          currency: orderData.order.currency,
+          amount: data.order.amount,
+          currency: data.order.currency,
           name: 'Balanced Plate Nutrition Clinic',
           description: selectedOption,
-          order_id: orderData.order.id,
+          order_id: data.order.id,
           prefill: {
             name: fullName,
             email: email,
@@ -98,58 +96,82 @@ export default function BookingModal({ isOpen, onClose, initialService }: Bookin
           theme: {
             color: '#8C6D34',
           },
+          modal: {
+            ondismiss: function () {
+              setLoading(false);
+            },
+          },
           handler: async function (response: any) {
-            const verifyRes = await fetch('/api/razorpay/verify-payment', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
-
-            const verifyData = await verifyRes.json();
-            setLoading(false);
-
-            if (verifyData.success) {
-              const generatedId = 'BPN-' + Math.floor(100000 + Math.random() * 900000);
-              
-              setBookingSuccess({
-                bookingId: generatedId,
-                option: selectedOption,
-                patientName: fullName,
-                phone: phone,
-                email: email,
-                date: date,
-                paymentId: response.razorpay_payment_id,
-                status: 'Confirmed (Paid via Razorpay)',
-              });
-
-              // Send confirmation email asynchronously with Google Form & WhatsApp links
-              fetch('/api/send-confirmation', {
+            setLoading(true);
+            try {
+              const verifyRes = await fetch('/api/razorpay/verify-payment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  bookingId: generatedId,
-                  patientName: fullName,
-                  email: email,
-                  phone: phone,
-                  option: selectedOption,
-                  date: date,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
                 }),
-              }).catch((e) => console.error('Failed sending confirmation email', e));
-            } else {
-              alert('Payment signature verification failed.');
+              });
+
+              const verifyData = await verifyRes.json();
+              setLoading(false);
+
+              if (verifyData.success) {
+                const generatedId = 'BPN-' + Math.floor(100000 + Math.random() * 900000);
+                
+                setBookingSuccess({
+                  bookingId: generatedId,
+                  option: selectedOption,
+                  patientName: fullName,
+                  phone: phone,
+                  email: email,
+                  date: date,
+                  paymentId: response.razorpay_payment_id,
+                  status: 'Confirmed (Paid via Razorpay)',
+                });
+
+                // Send confirmation email asynchronously
+                fetch('/api/send-confirmation', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    bookingId: generatedId,
+                    patientName: fullName,
+                    email: email,
+                    phone: phone,
+                    option: selectedOption,
+                    date: date,
+                  }),
+                }).catch((e) => console.error('Failed sending confirmation email', e));
+              } else {
+                alert('Payment signature verification failed.');
+              }
+            } catch (err) {
+              console.error(err);
+              setLoading(false);
+              alert('Error verifying payment.');
             }
           },
         };
 
         const razorpayInstance = new (window as any).Razorpay(options);
         razorpayInstance.open();
+        setLoading(false);
       };
 
-      document.body.appendChild(script);
+      if ((window as any).Razorpay) {
+        launchRazorpay(orderData);
+      } else {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => launchRazorpay(orderData);
+        script.onerror = () => {
+          setLoading(false);
+          alert('Failed to load Razorpay Checkout SDK. Please check your network connection.');
+        };
+        document.body.appendChild(script);
+      }
     } catch (err: any) {
       console.error(err);
       setLoading(false);
